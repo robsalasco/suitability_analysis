@@ -46,7 +46,7 @@
         "source-layer": "map_h3",
         paint: {
           "fill-color": "rgba(0, 0, 0, 0)",
-         "fill-opacity": 0,
+          "fill-opacity": 0,
         },
       });
     });
