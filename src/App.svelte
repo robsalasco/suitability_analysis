@@ -18,7 +18,7 @@
 
   let fillcolor;
   
-  function run_model(ran1 = 1, ran2 = 1, ran3 = 1, ran4 = 1) {
+  function run_model(ran1 = 100, ran2 = 100, ran3 = 100, ran4 = 100) {
 
     let model;
     let dataplot;
