@@ -15,6 +15,8 @@
 
   let mounted = true;
   let fillcolor;
+  let results;
+  let data;
 
   Papa.parsePromise = function (file) {
     return new Promise(function (complete, error) {
@@ -23,8 +25,6 @@
   };
 
   async function run_model(ran1 = 100, ran2 = 100, ran3 = 100, ran4 = 100) {
-    var results;
-    var data;
 
     var h3 = [],
       var1 = [],
@@ -32,10 +32,12 @@
       var3 = [],
       var4 = [];
       
-    results = await Papa.parsePromise(`./data/hexagons.csv`);
+    if (!data){
+      results = await Papa.parsePromise(`./data/hexagons.csv`);
 
-    data = await results.data;
-
+      data = await results.data;
+    }
+    
     await data.map(function (d) {
       h3.push(d[0]);
       var1.push(parseFloat(d[1]));
