@@ -39,11 +39,11 @@
       mounted = false
       colorg = ['match',['get', 'h3']];
 
-      dataplot.forEach(function (row) {
+      for (const row of dataplot) {
         var green = Math.floor(row['value'] * 255);
         var color = 'rgb(0, ' + green + ', 0)';
         colorg.push(row['h3'], color);
-      });
+      }
 
       colorg.push('rgba(0, 0, 0, 0)');
 
