@@ -4,6 +4,7 @@
   import Slider from "@bulatdashiev/svelte-slider";
   import Papa from "papaparse";
   import ColorChanger from "./ColorChanger.svelte";
+  import { onMount } from "svelte";
 
   let mapComponent;
 
@@ -13,12 +14,35 @@
   let range4 = [100, 100];
 
   let mounted = true;
-
-  var data;
-
   let fillcolor;
-  
-  function run_model(ran1 = 100, ran2 = 100, ran3 = 100, ran4 = 100) {
+
+  Papa.parsePromise = function (file) {
+    return new Promise(function (complete, error) {
+      Papa.parse(file, { download: true, complete, error });
+    });
+  };
+
+  async function run_model(ran1 = 100, ran2 = 100, ran3 = 100, ran4 = 100) {
+    var results;
+    var data;
+
+    var h3 = [],
+      var1 = [],
+      var2 = [],
+      var3 = [],
+      var4 = [];
+      
+    results = await Papa.parsePromise(`./data/hexagons.csv`);
+
+    data = await results.data;
+
+    await data.map(function (d) {
+      h3.push(d[0]);
+      var1.push(parseFloat(d[1]));
+      var2.push(parseFloat(d[2]));
+      var3.push(parseFloat(d[3]));
+      var4.push(parseFloat(d[4]));
+    });
 
     let model;
     let dataplot;
@@ -30,69 +54,53 @@
         var2[i] * (ran2 / 100) +
         var3[i] * (ran3 / 100) +
         var4[i] * (ran4 / 100)
-      );
+    );
 
-      dataplot = h3.map(function(e, i) {
-        return {h3:e, value: (model[i]-Math.min(...model))/(Math.max(...model)-Math.min(...model))};
-      });
- 
-      mounted = false
-      colorg = ['match',['get', 'h3']];
+    dataplot = h3.map(function (e, i) {
+      return {
+        h3: e,
+        value:
+          (model[i] - Math.min(...model)) /
+          (Math.max(...model) - Math.min(...model)),
+      };
+    });
 
-      for (const row of dataplot) {
-        var green = Math.floor(row['value'] * 255);
-        var color = 'rgb(0, ' + green + ', 0)';
-        colorg.push(row['h3'], color);
-      }
+    mounted = false;
+    colorg = ["match", ["get", "h3"]];
 
-      colorg.push('rgba(0, 0, 0, 0)');
+    for (const row of dataplot) {
+      var green = Math.floor(row["value"] * 255);
+      var color = "rgb(0, " + green + ", 0)";
+      colorg.push(row["h3"], color);
+    }
 
-      return colorg
+    colorg.push("rgba(0, 0, 0, 0)");
+
+    return colorg;
   }
 
-
-//  fillcolor = ["case",["==",["get","h3"],"88b2c5542bfffff"], "red" , "grey" ];
-// fillcolor = ['match',['get', 'h3'],'88b2c5542bfffff','blue', 'red'];
-
-  var h3 = [],
-    var1 = [],
-    var2 = [],
-    var3 = [],
-    var4 = [];
-
-  Papa.parse(`./data/hexagons.csv`, {
-    header: false,
-    download: true,
-    complete: function (results) {
-      data = results.data;
-      data.map(function (d) {
-        h3.push(d[0]);
-        var1.push(parseFloat(d[1]));
-        var2.push(parseFloat(d[2]));
-        var3.push(parseFloat(d[3]));
-        var4.push(parseFloat(d[4]));
-      });
-    },
-  });
+  // fillcolor = ["case",["==",["get","h3"],"88b2c5542bfffff"], "red" , "grey" ];
+  // fillcolor = ['match',['get', 'h3'],'88b2c5542bfffff','blue', 'red'];
 
   $: {
-    if (range1[0]!=100 || range2[0]!=100 || range3[0]!=100 || range4[0]!=100) {
-      reCalc(range1 && range2 && range3 && range4);
-    } else {
-      fillcolor =  "rgba(0, 0, 0, 0)"
-    }
+    reCalc(range1 && range2 && range3 && range4);
   }
 
   async function reCalc() {
-
-      fillcolor = run_model(range1[0], range2[0], range3[0], range4[0]);
-
+    if (
+      range1[0] != 100 ||
+      range2[0] != 100 ||
+      range3[0] != 100 ||
+      range4[0] != 100
+    ) {
+      fillcolor = await run_model(range1[0], range2[0], range3[0], range4[0]);
       mounted = false;
-      setTimeout(() => mounted = true, 0);
+      setTimeout(() => (mounted = true), 0);
+    } else {
+      fillcolor = await run_model();
+      mounted = true;
+    }
   }
-
-  //fillcolor.push('rgba(0, 0, 0, 0)');
-
 </script>
 
 <Layout>
@@ -121,10 +129,10 @@
   <span slot="right">
     <Mapbox bind:this={mapComponent}>
       {#if mounted}
-      <ColorChanger fillcolor={fillcolor} />
+        <ColorChanger {fillcolor} />
       {/if}
     </Mapbox>
-</span>
+  </span>
 </Layout>
 
 <style>
