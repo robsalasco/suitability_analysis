@@ -1,6 +1,6 @@
 <script>
   import { getContext } from "svelte";
-	import { key } from './config.js';
+  import { key } from './config.js';
 
   const { getMap } = getContext(key);
   const map = getMap();

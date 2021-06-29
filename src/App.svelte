@@ -15,8 +15,8 @@
 
   let mounted = true;
   let fillcolor;
-  let results;
   let data;
+  let isLoading = true;
 
   Papa.parsePromise = function (file) {
     return new Promise(function (complete, error) {
@@ -24,20 +24,19 @@
     });
   };
 
-  async function run_model(ran1 = 100, ran2 = 100, ran3 = 100, ran4 = 100) {
+  onMount(async () => {
+    const results = await Papa.parsePromise(`./data/hexagons.csv`);
+    data = await results.data;
+    isLoading = false;
+  });
 
+  async function run_model(ran1 = 100, ran2 = 100, ran3 = 100, ran4 = 100) {
     var h3 = [],
       var1 = [],
       var2 = [],
       var3 = [],
       var4 = [];
-      
-    if (!data){
-      results = await Papa.parsePromise(`./data/hexagons.csv`);
 
-      data = await results.data;
-    }
-    
     await data.map(function (d) {
       h3.push(d[0]);
       var1.push(parseFloat(d[1]));
@@ -85,7 +84,9 @@
   // fillcolor = ['match',['get', 'h3'],'88b2c5542bfffff','blue', 'red'];
 
   $: {
-    reCalc(range1 && range2 && range3 && range4);
+    if (isLoading == false) {
+      reCalc(range1 && range2 && range3 && range4);
+    }
   }
 
   async function reCalc() {
