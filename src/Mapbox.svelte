@@ -13,21 +13,18 @@
 
   let container;
 
-  export function flyTo() {
-    map.flyTo({
-      center: [75, 75],
-      zoom: 9,
-      bearing: 0,
-    });
-  }
-
   onMount(() => {
     map = new mapboxgl.Map({
       container: container,
       style: lightStyle,
       zoom: 10,
       center: [-70.648956, -33.450349],
+      attributionControl: false
     });
+
+    map.addControl(new mapboxgl.AttributionControl({
+      compact: true
+    }));
 
     map.on("load", function () {
       map.addSource("h3-data", {
@@ -52,13 +49,6 @@
     });
   });
 </script>
-
-<svelte:head>
-  <link
-    href="https://api.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css"
-    rel="stylesheet"
-  />
-</svelte:head>
 
 <div bind:this={container}>
   {#if map}
