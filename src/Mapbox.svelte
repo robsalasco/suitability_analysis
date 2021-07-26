@@ -30,7 +30,7 @@
       map.addSource("h3-data", {
         type: "vector",
         tiles: [
-          "https://mvt.mtnlss.ml/maps/gpkg_hexagons/{z}/{x}/{y}.vector.pbf",
+          "https://mvt.mtnlss.co/maps/gpkg_hexagons/{z}/{x}/{y}.vector.pbf",
         ],
         minzoom: 10,
         maxzoom: 14,
